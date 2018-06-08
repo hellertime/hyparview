@@ -1,0 +1,49 @@
+namespace hyparview.message;
+
+// Used for messages with no meaningful reply
+table Ack {}
+
+// Node identity is just a string to allow for any addressing scheme
+table Node {
+  name: string;
+}
+
+table Join {
+  node: Node;
+}
+
+// FwdJoin elides sender identity, transport protocol provides this
+table FwdJoin {
+  node: Node;
+  ttl: uint;
+}
+
+// Disconnect elides sender identity, transport protocol provides this
+table Disconnect {}
+
+enum NeighborPri : byte { Low, High }
+
+// Neighbor elides sender identity, transport protocol provides this
+table Neighbor {
+  pri: NeighborPri;
+}
+
+enum NeighborRsp : byte { Rejected, Accepted }
+
+table NeighborAck {
+  rsp: NeighborRsp; 
+}
+
+// Optimization: sender is not included in xchange, transport protocol
+// provides this
+table Shuffle {
+  xchange: [Node];
+  ttl: uint;
+}
+
+// HyParView specifies this be sent over a new TCP connection
+// instead we just send the data in a reply. This doesn't appear
+// to change the properties of the protocol
+table ShuffleReply {
+  xchange: [Node];
+}

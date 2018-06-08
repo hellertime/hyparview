@@ -1,0 +1,11 @@
+include "hyparview_message.fbs";
+
+namespace hyparview.protocol;
+
+rpc_service HyParView {
+  Join(hyparview.message.Join):hyparview.message.Ack;
+  FwdJoin(hyparview.message.FwdJoin):hyparview.message.Ack;
+  Disconnect(hyparview.message.Disconnect):hyparview.message.Ack;
+  Neighbor(hyparview.message.Neighbor):hyparview.message.NeighborAck;
+  Shuffle(hyparview.message.Shuffle):hyparview.message.ShuffleReply;
+}
