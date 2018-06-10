@@ -8,4 +8,4 @@ set(SEASTAR_ENABLE_TESTS OFF CACHE BOOL "disable seastar tests")
 
 # subdirectories
 add_subdirectory(smf)
-add_subdirectory(src)
+add_subdirectory(hyparviewd)
