@@ -8,20 +8,26 @@
 #include <smf/rpc_server.h>
 
 // smfc generated headers
-#include "hyparview_message.smf.fb.h"
 #include "hyparview_protocol.smf.fb.h"
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
-
+    seastar::distributed<smf::rpc_server> rpc;
     seastar::app_template app;
-    app.add_options()
-        ("ip", po::value<std::string>()->default_value("127.0.0.1"), "hypaviewd server ip address")
-        ("port", po::value<uint16_t>()->default_value(12345), "hyparviewd server port")
-        ;
 
-    return app.run_deprecated(argc, argv, [&] {
-        auto& config = app.configuration();
-        return seastar::make_ready_future<>();
+    smf::rpc_server_args server_args;
+    server_args.ip       = "0.0.0.0";
+    server_args.rpc_port = 6789;
+
+    return app.run(argc, argv, [&] () -> seastar::future<int> {
+        seastar::engine().at_exit([&] { return rpc.stop(); });
+
+        return rpc.start(server_args)
+            .then([&rpc] {
+                return rpc.invoke_on_all(&smf::rpc_server::start);
+            })
+            .then([] {
+                return seastar::make_ready_future<int>(0);
+            });
     });
 }
